@@ -5,7 +5,7 @@ import (
 )
 
 func TestLogger(t *testing.T) {
-	l := NewWithCaller()
+	l := New()
 
 	l.Info("hello")
 

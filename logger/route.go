@@ -30,8 +30,8 @@ func GinLoggerMiddleware() gin.HandlerFunc {
 
 		c.Header(XReqIDHeader1, reqID)
 
-		log := New(reqID)
-		c.Set(LogCtxKey, NewWithCaller(reqID))
+		log := newLogger(reqID)
+		c.Set(LogCtxKey, New(reqID))
 		logReq(log, c)
 		now := time.Now()
 		c.Next()

@@ -57,6 +57,16 @@ var (
 // New logger default writer is os.StdErr
 // Default field: x-reqid, time, caller, message
 func New(reqID ...string) Logger {
+	log := newLogger(reqID...)
+	l := log.(*Log)
+	zl := l.log.With().CallerWithSkipFrameCount(3).Logger()
+	l.log = &zl
+	return l
+
+}
+
+// newLogger return logger without caller field
+func newLogger(reqID ...string) Logger {
 	reqid := GenReqID()
 	if len(reqID) > 0 {
 		reqid = reqID[0]
@@ -65,17 +75,7 @@ func New(reqID ...string) Logger {
 	l := zerolog.New(os.Stderr).With().Str(xreqidField, reqid).Timestamp().Logger()
 	log := &Log{log: &l, reqID: reqid}
 	SetTimeFieldFormat(defaultLogTimeFormat)
-
 	return log
-}
-
-// NewWithCaller new logger with caller field
-func NewWithCaller(reqID ...string) Logger {
-	log := New(reqID...)
-	l := log.(*Log)
-	zl := l.log.With().CallerWithSkipFrameCount(3).Logger()
-	l.log = &zl
-	return l
 }
 
 // WithField add new field
