@@ -35,6 +35,7 @@ type Logger interface {
 type LOptioner interface {
 	SetLevel(level Level) Logger
 	WithField(field map[string]interface{}) Logger
+	Caller(frame int) Logger
 }
 
 // Log implement Logger, RequestIDer, XLogger
@@ -65,6 +66,11 @@ func New(reqID ...string) Logger {
 
 }
 
+// NewWithoutCaller new log without caller field
+func NewWithoutCaller(reqID ...string) Logger {
+	return newLogger(reqID...)
+}
+
 // newLogger return logger without caller field
 func newLogger(reqID ...string) Logger {
 	reqid := GenReqID()
@@ -92,6 +98,15 @@ func (l *Log) WithField(field map[string]interface{}) Logger {
 func (l *Log) SetLevel(level Level) Logger {
 	zl := l.log.Level(level.ToZeroLogLevel())
 
+	return &Log{
+		log:   &zl,
+		reqID: l.reqID,
+	}
+}
+
+// Caller set caller frame
+func (l *Log) Caller(frame int) Logger {
+	zl := l.log.With().CallerWithSkipFrameCount(frame).Logger()
 	return &Log{
 		log:   &zl,
 		reqID: l.reqID,

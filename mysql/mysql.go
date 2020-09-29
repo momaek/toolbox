@@ -1,10 +1,12 @@
 package mysql
 
 import (
+	"math/rand"
 	"time"
 
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
+	//"github.com/momaek/toolbox/logger"
 )
 
 // DB ..
@@ -61,10 +63,45 @@ func Init(configs ...*Config) {
 			conf.ConnMaxLifeTime = connMaxLifeTime
 		}
 		database.SetConnMaxLifetime(time.Duration(conf.ConnMaxLifeTime) * time.Second)
+
+		tag := conf.GetTag()
+		clientMap[tag] = append(clientMap[tag], &DB{db})
 	}
 }
 
 // GetByTag get db instance by tag
 func GetByTag(tag string, xReqID ...string) *DB {
-	return nil
+	/*
+		var reqID = ""
+		if len(xReqID) > 0 {
+			reqID = xReqID[0]
+		} else {
+			reqID = logger.GenReqID()
+		}
+	*/
+
+	if tag == "" {
+		tag = defaultTag
+	}
+
+	clients := clientMap[tag]
+	client := clients[rand.Intn(len(clients))]
+
+	db := client.Session(&gorm.Session{Logger: nil})
+	return &DB{db}
+}
+
+// GetByTagReadOnly get tag readonly mysql
+func GetByTagReadOnly(tag string, xReqID ...string) *DB {
+	return GetByTag(tag+readOnlyTagSuffix, xReqID...)
+}
+
+// Get get default tag mysql
+func Get(xReqID ...string) *DB {
+	return GetByTag(defaultTag, xReqID...)
+}
+
+// GetReadOnly get default read only tag mysql
+func GetReadOnly(xReqID ...string) *DB {
+	return GetByTag(defaultReadOnlyTag, xReqID...)
 }

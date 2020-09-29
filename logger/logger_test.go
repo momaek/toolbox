@@ -12,4 +12,5 @@ func TestLogger(t *testing.T) {
 	l.WithField(map[string]interface{}{"type": "DATABASE"}).Info("helllo3")
 
 	l.SetLevel(Warn).Warn("hello")
+	l.Caller(3).Info("hello-222")
 }

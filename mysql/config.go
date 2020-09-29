@@ -31,7 +31,16 @@ func (conf *Config) GetDSN() string {
 		url.QueryEscape("Local"))
 }
 
-// BuildTagKey ...
-func (conf *Config) BuildTagKey() {
+// GetTag ..
+func (conf *Config) GetTag() string {
+	tag := defaultTag
+	if conf.Tag != nil {
+		tag = *conf.Tag
+	}
 
+	if conf.ReadOnly {
+		tag += readOnlyTagSuffix
+	}
+
+	return tag
 }
