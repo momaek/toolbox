@@ -1,9 +1,10 @@
-package mysql
+package db
 
 import (
 	"math/rand"
 	"time"
 
+	"github.com/momaek/toolbox/logger"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
 	//"github.com/momaek/toolbox/logger"
@@ -12,10 +13,15 @@ import (
 // DB ..
 type DB struct {
 	*gorm.DB
+	slowThreshold int64
 }
 
+// Dialect gorm dialector
+type Dialect func(dsn string) gorm.Dialector
+
 var (
-	clientMap = map[string][]*DB{}
+	clientMap      = map[string][]*DB{}
+	defaultDialect = mysql.Open
 )
 
 const (
@@ -28,10 +34,13 @@ const (
 )
 
 // Init init mysql clients
-func Init(configs ...*Config) {
+func Init(d Dialect, configs ...*Config) {
+	if d == nil {
+		d = defaultDialect
+	}
 	for _, conf := range configs {
 		url := conf.GetDSN()
-		db, err := gorm.Open(mysql.Open(url), &gorm.Config{NowFunc: func() time.Time { return time.Now().Local() }})
+		db, err := gorm.Open(d(url), &gorm.Config{NowFunc: func() time.Time { return time.Now().Local() }})
 		if err != nil {
 			panic(err)
 		}
@@ -65,20 +74,18 @@ func Init(configs ...*Config) {
 		database.SetConnMaxLifetime(time.Duration(conf.ConnMaxLifeTime) * time.Second)
 
 		tag := conf.GetTag()
-		clientMap[tag] = append(clientMap[tag], &DB{db})
+		clientMap[tag] = append(clientMap[tag], &DB{db, conf.SlowThreshold})
 	}
 }
 
 // GetByTag get db instance by tag
 func GetByTag(tag string, xReqID ...string) *DB {
-	/*
-		var reqID = ""
-		if len(xReqID) > 0 {
-			reqID = xReqID[0]
-		} else {
-			reqID = logger.GenReqID()
-		}
-	*/
+	var reqID = ""
+	if len(xReqID) > 0 {
+		reqID = xReqID[0]
+	} else {
+		reqID = logger.GenReqID()
+	}
 
 	if tag == "" {
 		tag = defaultTag
@@ -87,8 +94,8 @@ func GetByTag(tag string, xReqID ...string) *DB {
 	clients := clientMap[tag]
 	client := clients[rand.Intn(len(clients))]
 
-	db := client.Session(&gorm.Session{Logger: nil})
-	return &DB{db}
+	db := client.Session(&gorm.Session{Logger: newLog(client.slowThreshold, reqID)})
+	return &DB{db, client.slowThreshold}
 }
 
 // GetByTagReadOnly get tag readonly mysql

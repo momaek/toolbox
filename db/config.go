@@ -1,4 +1,4 @@
-package mysql
+package db
 
 import (
 	"fmt"
@@ -18,6 +18,7 @@ type Config struct {
 	ConnMaxLifeTime int     `json:"conn_max_life_time" mapstructure:"conn_max_life_time"`
 	ReadOnly        bool    `json:"read_only"          mapstructure:"read_only"`
 	Tag             *string `json:"tag"                mapstructure:"tag"`
+	SlowThreshold   int64   `json:"slowthreshold"      mapstructure:"slowthreshold"` // DB 时间大于这个值，就Warning 慢查询 ms 毫秒 默认 50ms
 }
 
 // GetDSN get mysql connection url
