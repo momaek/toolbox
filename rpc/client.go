@@ -28,5 +28,20 @@ func NewWithHTTPClient(c *http.Client) *Client {
 
 // Get ..
 func (c *Client) Get(l logger.Logger, url string) (resp *http.Response, err error) {
-	return
+	req, err := http.NewRequest(http.MethodGet, url, nil)
+	if err != nil {
+		return
+	}
+
+	return c.do(l, req)
+}
+
+// Head ..
+func (c *Client) Head(l logger.Logger, url string) (resp *http.Response, err error) {
+	req, err := http.NewRequest(http.MethodHead, url, nil)
+	if err != nil {
+		return
+	}
+
+	return c.do(l, req)
 }

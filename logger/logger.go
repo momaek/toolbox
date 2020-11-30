@@ -26,6 +26,7 @@ type Logger interface {
 	// ReqID, http rpc call
 	ReqID() string
 	Xput(logs []string)
+	XLog() string
 
 	// Option
 	LOptioner
@@ -42,10 +43,11 @@ type LOptioner interface {
 type Log struct {
 	log   *zerolog.Logger
 	reqID string
+	xlog  []string
 }
 
 const (
-	xreqidField          = "x-reqid"
+	reqidField           = "reqid"
 	defaultLogTimeFormat = "2006-01-02 15:04:05.000000"
 )
 
@@ -78,7 +80,7 @@ func newLogger(reqID ...string) Logger {
 		reqid = reqID[0]
 	}
 
-	l := zerolog.New(os.Stderr).With().Str(xreqidField, reqid).Timestamp().Logger()
+	l := zerolog.New(os.Stderr).With().Str(reqidField, reqid).Timestamp().Logger()
 	log := &Log{log: &l, reqID: reqid}
 	SetTimeFieldFormat(defaultLogTimeFormat)
 	return log

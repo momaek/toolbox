@@ -14,6 +14,9 @@ var (
 
 	// LogCtxKey logger save in gin context
 	LogCtxKey = "log_ctx_key"
+
+	// XLogKey log req handle time
+	XLogKey = "X-Log"
 )
 
 // GinLoggerMiddleware gin web framework logger middleware
@@ -31,10 +34,12 @@ func GinLoggerMiddleware() gin.HandlerFunc {
 		c.Header(XReqIDHeader1, reqID)
 
 		log := newLogger(reqID)
-		c.Set(LogCtxKey, New(reqID))
+		l := New(reqID)
+		c.Set(LogCtxKey, l)
 		logReq(log, c)
 		now := time.Now()
 		c.Next()
+		c.Writer.Header().Add(XLogKey, l.XLog())
 		logResponse(log, c, now)
 	}
 }

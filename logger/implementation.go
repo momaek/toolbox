@@ -2,6 +2,7 @@ package logger
 
 import (
 	"fmt"
+	"strings"
 )
 
 // Debug debug level
@@ -71,5 +72,10 @@ func (l *Log) ReqID() string {
 
 // Xput rpc call may use
 func (l *Log) Xput(logs []string) {
-	panic("not implemented") // TODO: Implement
+	l.xlog = append(l.xlog, logs...)
+}
+
+// XLog ...
+func (l *Log) XLog() string {
+	return strings.Join(l.xlog, ";")
 }
