@@ -1,4 +1,4 @@
-package client
+package rpc
 
 import (
 	"bytes"
@@ -7,7 +7,7 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/json-iterator/go"
+	jsoniter "github.com/json-iterator/go"
 	"github.com/momaek/toolbox/logger"
 	"github.com/momaek/toolbox/utils"
 )
@@ -45,6 +45,11 @@ func (c *Client) doRet(l logger.Logger, req *http.Request, ret interface{}) (err
 		return
 	}
 
+	return callRet(l, resp, ret)
+}
+
+// CallRet ...
+func CallRet(l logger.Logger, resp *http.Response, ret interface{}) (err error) {
 	return callRet(l, resp, ret)
 }
 
