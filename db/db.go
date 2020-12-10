@@ -80,7 +80,7 @@ func Init(d Dialect, configs ...*Config) {
 
 // GetByTag get db instance by tag
 func GetByTag(tag string, xReqID ...string) *DB {
-	var reqID = ""
+	var reqID string
 	if len(xReqID) > 0 {
 		reqID = xReqID[0]
 	} else {

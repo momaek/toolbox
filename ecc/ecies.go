@@ -159,9 +159,9 @@ func concatKDF(hash hash.Hash, z, s1 []byte, kdLen int) (k []byte, err error) {
 	k = make([]byte, 0)
 
 	for i := 0; i <= reps; i++ {
-		hash.Write(counter)
-		hash.Write(z)
-		hash.Write(s1)
+		_, _ = hash.Write(counter)
+		_, _ = hash.Write(z)
+		_, _ = hash.Write(s1)
 		k = append(k, hash.Sum(nil)...)
 		hash.Reset()
 		incCounter(counter)
@@ -175,8 +175,8 @@ func concatKDF(hash hash.Hash, z, s1 []byte, kdLen int) (k []byte, err error) {
 // SEC 1, 3.5.
 func messageTag(hash func() hash.Hash, km, msg, shared []byte) []byte {
 	mac := hmac.New(hash, km)
-	mac.Write(msg)
-	mac.Write(shared)
+	_, _ = mac.Write(msg)
+	_, _ = mac.Write(shared)
 	tag := mac.Sum(nil)
 	return tag
 }
@@ -252,7 +252,7 @@ func DoEncrypt(rand io.Reader, pub *PublicKey, m, s1, s2 []byte) (ct []byte, err
 	}
 	Ke := K[:params.KeyLen]
 	Km := K[params.KeyLen:]
-	hash.Write(Km)
+	_, _ = hash.Write(Km)
 	Km = hash.Sum(nil)
 	hash.Reset()
 
@@ -331,7 +331,7 @@ func (prv *PrivateKey) Decrypt(c, s1, s2 []byte) (m []byte, err error) {
 
 	Ke := K[:params.KeyLen]
 	Km := K[params.KeyLen:]
-	hash.Write(Km)
+	_, _ = hash.Write(Km)
 	Km = hash.Sum(nil)
 	hash.Reset()
 
