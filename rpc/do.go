@@ -7,12 +7,9 @@ import (
 	"net/http"
 	"time"
 
-	jsoniter "github.com/json-iterator/go"
 	"github.com/momaek/toolbox/logger"
 	"github.com/momaek/toolbox/utils"
 )
-
-var json = jsoniter.ConfigCompatibleWithStandardLibrary
 
 func (c *Client) do(l logger.Logger, req *http.Request) (resp *http.Response, err error) {
 	var (
@@ -45,15 +42,15 @@ func (c *Client) doRet(l logger.Logger, req *http.Request, ret interface{}) (err
 		return
 	}
 
-	return callRet(l, resp, ret)
+	return c.callRet(l, resp, ret)
 }
 
 // CallRet ...
 func CallRet(l logger.Logger, resp *http.Response, ret interface{}) (err error) {
-	return callRet(l, resp, ret)
+	return New().callRet(l, resp, ret)
 }
 
-func callRet(l logger.Logger, resp *http.Response, ret interface{}) (err error) {
+func (c *Client) callRet(l logger.Logger, resp *http.Response, ret interface{}) (err error) {
 	defer func() {
 		io.Copy(ioutil.Discard, resp.Body)
 		resp.Body.Close()
@@ -61,10 +58,9 @@ func callRet(l logger.Logger, resp *http.Response, ret interface{}) (err error) 
 
 	if resp.StatusCode/100 == 2 {
 		if ret != nil && resp.ContentLength > 0 {
-			err = json.NewDecoder(resp.Body).Decode(ret)
+			err = c.coder.Decode(resp.Body, ret)
+			return
 		}
-
-		return
 	}
 
 	e := &Error{
