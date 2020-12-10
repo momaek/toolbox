@@ -13,21 +13,35 @@ import (
 // Client ..
 type Client struct {
 	*http.Client
+	coder
 }
 
+var defaultCoder = new(jsonCoder)
+
 // New with default http client
-func New() *Client {
-	return &Client{Client: http.DefaultClient}
+func New(coder ...coder) *Client {
+	if len(coder) == 0 {
+		coder[0] = defaultCoder
+	}
+	return &Client{Client: http.DefaultClient, coder: coder[0]}
 }
 
 // NewWithRoundTripper new with roundtripper
-func NewWithRoundTripper(tr http.RoundTripper) *Client {
-	return &Client{Client: &http.Client{Transport: tr}}
+func NewWithRoundTripper(tr http.RoundTripper, coder ...coder) *Client {
+	if len(coder) == 0 {
+		coder[0] = defaultCoder
+	}
+
+	return &Client{Client: &http.Client{Transport: tr}, coder: coder[0]}
 }
 
 // NewWithHTTPClient new with http client
-func NewWithHTTPClient(c *http.Client) *Client {
-	return &Client{Client: c}
+func NewWithHTTPClient(c *http.Client, coder ...coder) *Client {
+	if len(coder) == 0 {
+		coder[0] = defaultCoder
+	}
+
+	return &Client{Client: c, coder: coder[0]}
 }
 
 // Get ..
@@ -124,7 +138,7 @@ func (c *Client) PostJSON(l logger.Logger, url1 string, data interface{}) (*http
 		err error
 	)
 	if data != nil {
-		b, err = json.Marshal(data)
+		b, err = c.coder.Encode(data)
 		if err != nil {
 			return nil, err
 		}
@@ -140,7 +154,7 @@ func (c *Client) Call(l logger.Logger, url1 string, ret interface{}) (err error)
 		return
 	}
 
-	return callRet(l, resp, ret)
+	return c.callRet(l, resp, ret)
 }
 
 // CallWith call with specified method,url,body... and parse json request
@@ -159,7 +173,7 @@ func (c *Client) CallWith(l logger.Logger, method, url1, contentType string, bod
 func (c *Client) CallWithJSON(l logger.Logger, url1 string, data interface{}, ret interface{}) (err error) {
 	var b []byte
 	if data != nil {
-		b, err = json.Marshal(data)
+		b, err = c.coder.Encode(data)
 		if err != nil {
 			return
 		}
@@ -181,7 +195,7 @@ func (c *Client) GetCall(l logger.Logger, url string, ret interface{}) (err erro
 		return
 	}
 
-	return callRet(l, resp, ret)
+	return c.callRet(l, resp, ret)
 }
 
 // DeleteCall ..
@@ -191,7 +205,7 @@ func (c *Client) DeleteCall(l logger.Logger, url string, ret interface{}) (err e
 		return
 	}
 
-	return callRet(l, resp, ret)
+	return c.callRet(l, resp, ret)
 }
 
 // PutCall ..
@@ -201,5 +215,5 @@ func (c *Client) PutCall(l logger.Logger, url string, ret interface{}) (err erro
 		return
 	}
 
-	return callRet(l, resp, ret)
+	return c.callRet(l, resp, ret)
 }
