@@ -15,7 +15,7 @@ func TestGinLogger(t *testing.T) {
 		log.Info("hello")
 	})
 
-	go engine.Run(":9090")
+	go func() { _ = engine.Run(":9090") }()
 
-	http.Get("http://localhost:9090/")
+	_, _ = http.Get("http://localhost:9090/")
 }

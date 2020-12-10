@@ -2,7 +2,6 @@ package logger
 
 import (
 	"os"
-	"sync"
 
 	"github.com/rs/zerolog"
 )
@@ -49,12 +48,6 @@ type Log struct {
 const (
 	reqidField           = "reqid"
 	defaultLogTimeFormat = "2006-01-02 15:04:05.000000"
-)
-
-var (
-	logSyncPool = sync.Pool{New: func() interface{} {
-		return ""
-	}}
 )
 
 // New logger default writer is os.StdErr
