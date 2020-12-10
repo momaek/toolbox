@@ -3,7 +3,6 @@ on:
   pull_request:
     branches:
       - develop
-  pull_request:
 jobs:
   golangci:
     name: lint
