@@ -18,7 +18,7 @@ func BytesToString2(b []byte) string {
 
 // RemoveDuplicateStringSlice remove duplicate item in string slice
 func RemoveDuplicateStringSlice(slice []string) []string {
-	m := make(map[string]struct{}, 0)
+	m := make(map[string]struct{})
 	retSlice := make([]string, 0, len(slice))
 	for _, v := range slice {
 		m[v] = struct{}{}
