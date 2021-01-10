@@ -130,8 +130,8 @@ func getInTagParamLocAndName(tag string) (loc, name string) {
 	return
 }
 
-func isFromBody(tag reflect.StructTag, bodyTag string) bool {
-	bodyTag, bodyOK := tag.Lookup(bodyTag)
+func isFromBody(tag reflect.StructTag, tagName string) bool {
+	_, bodyOK := tag.Lookup(tagName)
 	if !bodyOK {
 		return false
 	}

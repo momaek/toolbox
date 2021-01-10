@@ -30,7 +30,7 @@ func TestBind(t *testing.T) {
 		err := Bind(c, &args)
 		if err != nil {
 			log.Println(err)
-			c.AbortWithError(http.StatusBadRequest, err)
+			_ = c.AbortWithError(http.StatusBadRequest, err)
 			return
 		}
 
