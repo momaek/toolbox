@@ -8,7 +8,7 @@ import (
 	"time"
 
 	"github.com/momaek/toolbox/logger"
-	"github.com/momaek/toolbox/utils"
+	"github.com/momaek/toolbox/utils/stringutils"
 )
 
 func (c *Client) do(l logger.Logger, req *http.Request) (resp *http.Response, err error) {
@@ -76,7 +76,7 @@ func (c *Client) callRet(l logger.Logger, resp *http.Response, ret interface{}) 
 	if resp.ContentLength > 0 {
 		buf := bytes.NewBuffer(nil)
 		_, _ = io.Copy(buf, resp.Body)
-		e.Body = utils.BytesToString(buf.Bytes())
+		e.Body = stringutils.BytesToString(buf.Bytes())
 	}
 
 	return e
