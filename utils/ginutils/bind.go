@@ -98,7 +98,7 @@ func Bind(c *gin.Context, param interface{}, decoders ...Decoder) (err error) {
 			return
 		}
 
-		if !ok {
+		if isRequeired && !ok {
 			err = fmt.Errorf("%s is required", name)
 			return
 		}
