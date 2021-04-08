@@ -33,14 +33,22 @@ const (
 	connMaxLifeTime = 5 // second
 )
 
+func open(d Dialect, conf *Config) (*gorm.DB, error) {
+	if len(conf.DBPath) > 0 {
+		return gorm.Open(d(conf.DBPath), &gorm.Config{NowFunc: func() time.Time { return time.Now().Local() }})
+	}
+
+	url := conf.GetDSN()
+	return gorm.Open(d(url), &gorm.Config{NowFunc: func() time.Time { return time.Now().Local() }})
+}
+
 // Init init mysql clients
 func Init(d Dialect, configs ...*Config) {
 	if d == nil {
 		d = defaultDialect
 	}
 	for _, conf := range configs {
-		url := conf.GetDSN()
-		db, err := gorm.Open(d(url), &gorm.Config{NowFunc: func() time.Time { return time.Now().Local() }})
+		db, err := open(d, conf)
 		if err != nil {
 			panic(err)
 		}
