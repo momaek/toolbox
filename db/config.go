@@ -19,6 +19,7 @@ type Config struct {
 	ReadOnly        bool    `json:"read_only"          mapstructure:"read_only"`
 	Tag             *string `json:"tag"                mapstructure:"tag"`
 	SlowThreshold   int64   `json:"slowthreshold"      mapstructure:"slowthreshold"` // DB 时间大于这个值，就Warning 慢查询 ms 毫秒 默认 50ms
+	DBPath          string  `json:"db_path" mapstructure:"db_path"`                  // for sqlite
 }
 
 // GetDSN get mysql connection url
