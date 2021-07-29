@@ -16,7 +16,7 @@ func TestDB(t *testing.T) {
 	db.Exec("select * from bill_record")
 
 	r := BillRecord{}
-	db.Find(&r, "id = 1")
+	db.Find(&r, "id  1")
 }
 
 type BillRecord struct {
