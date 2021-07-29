@@ -7,7 +7,6 @@ import (
 	"github.com/momaek/toolbox/logger"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
-	//"github.com/momaek/toolbox/logger"
 )
 
 // DB ..

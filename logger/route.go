@@ -50,6 +50,7 @@ func logReq(log Logger, c *gin.Context) {
 		"path":      c.Request.URL.Path,
 		"client_ip": c.ClientIP(),
 		"type":      "REQ",
+		"action":    "Start",
 	}
 
 	log.WithField(field).Info("[Started]")
@@ -63,6 +64,7 @@ func logResponse(log Logger, c *gin.Context, startTime time.Time) {
 		"latency":   time.Since(startTime).String(), // 耗时
 		"client_ip": c.ClientIP(),
 		"type":      "REQ",
+		"action":    "Finished",
 	}
 
 	log.WithField(field).Info("[Completed]")

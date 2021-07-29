@@ -75,7 +75,7 @@ func (l *Log) Trace(ctx context.Context, begin time.Time, fc func() (string, int
 
 // newLog
 func newLog(slow int64, xReqID string) *Log {
-	log := log.NewWithoutCaller(xReqID).Caller(7).WithField(map[string]interface{}{"type": "DATABASE"})
+	log := log.NewWithoutCaller(xReqID).Caller(6).WithField(map[string]interface{}{"type": "DATABASE"})
 
 	threshold := defaultSlowThreshold
 	if slow > 0 {
