@@ -18,4 +18,13 @@ type Session interface {
 }
 
 // Store session store where save session data
-type Store interface{}
+type Store interface {
+	Read(string) (Session, error)
+	Create(string, ...map[string]interface{}) error
+	GC() error
+	Destroy(string) error
+	UpdateExpireTime(string) error
+
+	// SetSingleUserSameTimeOnlineDevices set single user
+	SetSingleUserSameTimeOnlineDevices(count int)
+}

@@ -108,7 +108,7 @@ func Bind(c *gin.Context, param interface{}, decoders ...Decoder) (err error) {
 			return
 		}
 
-		reflectVal := bind(val, field.Type())
+		reflectVal := BindValue(val, field.Type())
 		if reflectVal.Type().ConvertibleTo(field.Type()) {
 			field.Set(reflectVal)
 		}
@@ -237,7 +237,7 @@ func pointerBinder(val string, typ reflect.Type) reflect.Value {
 		return reflect.Zero(typ)
 	}
 
-	v := bind(val, typ.Elem())
+	v := BindValue(val, typ.Elem())
 	p := reflect.New(v.Type()).Elem()
 	p.Set(v)
 	return p.Addr()
@@ -252,7 +252,8 @@ const (
 	DefaultDatetimeFormatSecond = "2006-01-02 15:04:05"
 )
 
-func bind(val string, typ reflect.Type) reflect.Value {
+// BindValue string to specified type
+func BindValue(val string, typ reflect.Type) reflect.Value {
 	binder, ok := TypeBinders[typ]
 	if !ok {
 		binder, ok = KindBinders[typ.Kind()]
