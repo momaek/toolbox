@@ -43,21 +43,21 @@ var (
 
 // Log request log msg
 type Log struct {
-	Message      string `json:"message"`
-	ReqID        string `json:"reqid"`
-	Type         string `json:"type"`
-	Level        string `json:"level"`
-	Time         string `json:"time"`
-	Path         string `json:"path"`
-	Method       string `json:"method"`
-	Status       int    `json:"status"`
-	Latency      string `json:"latency"`
-	ClientIP     string `json:"client_ip"`
-	Caller       string `json:"caller"`
-	Action       string `json:"action"`
-	SQL          string `json:"sql"`
-	RowsAffected int    `json:"rows_affected"`
-	SlowQuery    bool   `json:"slow_query"`
+	Message      string      `json:"message"`
+	ReqID        string      `json:"reqid"`
+	Type         string      `json:"type"`
+	Level        string      `json:"level"`
+	Time         string      `json:"time"`
+	Path         string      `json:"path"`
+	Method       string      `json:"method"`
+	Status       int         `json:"status"`
+	Latency      interface{} `json:"latency"`
+	ClientIP     string      `json:"client_ip"`
+	Caller       string      `json:"caller"`
+	Action       string      `json:"action"`
+	SQL          string      `json:"sql"`
+	RowsAffected int         `json:"rows_affected"`
+	SlowQuery    bool        `json:"slow_query"`
 }
 
 func main() {
@@ -115,6 +115,7 @@ func prettyPrintJSON(line string) {
 	buf.WriteString(fmt.Sprintf(NoticeColor, l.Time))
 	buf.WriteString(" [")
 	printLog(l, buf)
+
 	fmt.Printf("%s\n", buf.String())
 }
 
