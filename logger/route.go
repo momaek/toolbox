@@ -1,6 +1,7 @@
 package logger
 
 import (
+	"net/http"
 	"time"
 
 	"github.com/gin-gonic/gin"
@@ -17,7 +18,25 @@ var (
 
 	// XLogKey log req handle time
 	XLogKey = "X-Log"
+
+	// XRealIP real IP header
+	XRealIP = "X-Real-Ip"
+	// XForwardedFor ...
+	XForwardedFor = "X-Forwarded-For"
 )
+
+func getRealIP(req *http.Request) string {
+	if realIP := req.Header.Get(XRealIP); len(realIP) > 0 {
+		return realIP
+	}
+
+	forwards := req.Header[XForwardedFor]
+	if l := len(forwards); l > 0 {
+		return forwards[l-1]
+	}
+
+	return ""
+}
 
 // GinLoggerMiddleware gin web framework logger middleware
 func GinLoggerMiddleware() gin.HandlerFunc {
@@ -48,7 +67,7 @@ func logReq(log Logger, c *gin.Context) {
 	field := map[string]interface{}{
 		"method":    c.Request.Method,
 		"path":      c.Request.URL.Path,
-		"client_ip": c.ClientIP(),
+		"client_ip": getRealIP(c.Request),
 		"type":      "REQ",
 		"action":    "Start",
 	}
@@ -62,7 +81,7 @@ func logResponse(log Logger, c *gin.Context, startTime time.Time) {
 		"path":      c.Request.URL.Path,
 		"status":    c.Writer.Status(),
 		"latency":   time.Since(startTime).String(), // 耗时
-		"client_ip": c.ClientIP(),
+		"client_ip": getRealIP(c.Request),
 		"type":      "REQ",
 		"action":    "Finished",
 	}
