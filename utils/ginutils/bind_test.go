@@ -18,6 +18,7 @@ type testReq struct {
 	ID     string    `in:"path:id"`
 	Status *string   `in:"query:status,required,notnull"`
 	Time   time.Time `in:"query:time"`
+	IDs    []string  `in:"query:ids"`
 
 	Name string `json:"name"`
 	Desc string `json:"desc"`
